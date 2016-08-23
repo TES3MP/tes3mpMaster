@@ -32,18 +32,18 @@ def updater():
                 db.delete(server_id)
 
         with buffered_db_lock:
-            app.fvars['buffered_db'] = json.dumps(db.db)  # hack
+            app.fvars['buffered_db'] = '{"list servers":' + json.dumps(db.db) + '}'  # hack
         time.sleep(1)
 
 
 class MasterServerController(RESTfulController):
     def list(self):
         with buffered_db_lock:
-            return {"list servers": buffered_db}
+            return buffered_db
 
     def get(self, server_id):
         if db.if_exists(server_id):
-            return "server", db.db[server_id]
+            return json.dumps({"server", db.db[server_id]})
         else:
             raise web.badrequest
 
