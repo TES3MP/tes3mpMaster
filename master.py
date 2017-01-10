@@ -43,7 +43,7 @@ class MasterServerController(RESTfulController):
 
     def get(self, server_id):
         if db.if_exists(server_id):
-            return json.dumps({"server", db.db[server_id]})
+            return '{"server":' + json.dumps(db.db[server_id]) + '}'
         else:
             raise web.badrequest
 
