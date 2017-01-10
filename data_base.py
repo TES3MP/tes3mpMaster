@@ -8,10 +8,11 @@ class DataBase:
     __db = {}
     __db_mutex = {}
 
-    def __check_types(self, ip, port, query_port, motd, players, max_players, last_update):
+    def __check_types(self, ip, port, query_port, hostname, modname, players, max_players, last_update):
         if is_string(ip) \
-                and type(port) is int and type(query_port) is int and is_string(motd) \
-                and type(players) is int and type(max_players) is int and type(last_update) is int:
+                and type(port) is int and type(query_port) is int and is_string(hostname) \
+                and type(players) is int and type(max_players) is int and type(last_update) is int\
+                and is_string(modname):
             return True
         return False
     
@@ -21,19 +22,18 @@ class DataBase:
     def if_exists(self, id):
         return id in self.__db
 
-    def __update(self, ip, port, query_port, motd, players, max_players, last_update):
+    def __update(self, ip, port, query_port, hostname, modname, players, max_players, last_update):
         id = self.__id(ip, port)
         with self.__db_mutex[id]:
-            # self.__db[id]['ip'] = ip
-            # self.__db[id]['port'] = port
             self.__db[id]['query_port'] = query_port
-            self.__db[id]['motd'] = motd
+            self.__db[id]['hostname'] = hostname
+            self.__db[id]['modname'] = modname
             self.__db[id]['players'] = players
             self.__db[id]['max_players'] = max_players
             self.__db[id]['last_update'] = last_update
 
-    def add(self, ip, port, query_port, motd, players, max_players, last_update):
-        if not self.__check_types(ip, port, query_port, motd, players, max_players, last_update):
+    def add(self, ip, port, query_port, hostname, modname, players, max_players, last_update):
+        if not self.__check_types(ip, port, query_port, hostname, modname, players, max_players, last_update):
             return
 
         id = self.__id(ip, port)
@@ -44,17 +44,17 @@ class DataBase:
         self.__db[id] = {}
         self.__db_mutex[id] = Lock()
 
-        self.__update(ip, port, query_port, motd, players, max_players, last_update)
+        self.__update(ip, port, query_port, hostname, modname, players, max_players, last_update)
         return id
 
     # todo: need partial update support
-    def update(self, ip, port, query_port, motd, players, max_players, last_update):
+    def update(self, ip, port, query_port, hostname, modname, players, max_players, last_update):
         id = self.__id(ip, port)
         if not self.if_exists(id):
             return
-        if not self.__check_types(ip, port, query_port, motd, players, max_players, last_update):
+        if not self.__check_types(ip, port, query_port, hostname, modname, players, max_players, last_update):
             return
-        self.__update(ip, port, query_port, motd, players, max_players, last_update)
+        self.__update(ip, port, query_port, hostname, modname, players, max_players, last_update)
 
     def resetTimer(self, id):
         with self.__db_mutex[id]:
