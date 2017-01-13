@@ -3,6 +3,7 @@ import web
 import json
 import time
 import threading
+import re
 
 from restful_controller import RESTfulController
 from data_base import DataBase
@@ -15,6 +16,7 @@ buffered_db_lock = threading.Lock()
 ValidIpAddressRegex = "(?:[0-9]{1,3}\.){3}[0-9]{1,3}"
 ValidHostnameRegex = "(?:[a-z0-9]+(?:-[a-z0-9]+)*\.+[a-z]{2,})"
 ValidPortRegex = "(?:[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
+reg_port = '(?:http.*://)?(?P<host>[^:/ ]+).?(?P<port>[0-9]*).*'
 
 urls = (
     # r'/api/servers(?:/(?P<server_id>' + ValidHostnameRegex + '))?', 'MasterServerController',
@@ -28,7 +30,7 @@ def updater():
     while not stop_timer:
         for server_id in db.db.keys():
             db.update_time(server_id, 1)
-            if db.db[server_id]['last_update'] >= 60:
+            if db.db[server_id]['last_update'] >= 61:
                 db.delete(server_id)
 
         with buffered_db_lock:
@@ -62,11 +64,12 @@ class MasterServerController(RESTfulController):
         raise web.created
 
     def update(self, server_id):
-        print server_id
+        port = re.search(reg_port, server_id).group('port')
+        addr = web.ctx['ip']+':'+port
         response = False
-        if str(server_id).find(web.ctx['ip']) != -1 and db.if_exists(server_id):
+        if db.if_exists(addr):
             if not web.data():  # empty request
-                db.resetTimer(server_id)
+                db.resetTimer(addr)
                 response = True
             else:
                 try:
