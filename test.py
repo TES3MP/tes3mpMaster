@@ -2,7 +2,7 @@ import urllib2
 import json
 import time
 
-_data = json.loads('{"port": 25565, "query_port": 25565, "motd": "A MOTD", "players": 0, "max_players": 20}')
+_data = json.loads('{"port": 25565, "query_port": 25565, "hostname": "hostname", "players": 0, "max_players": 20, "modname": ""}')
 
 print _data
 
@@ -23,7 +23,7 @@ def request(url, req_type, data=None):
 
 try:
     request("http://localhost:8080/api/servers", 'POST', json.dumps(_data))
-    request("http://localhost:8080/api/servers/127.0.0.2:25565", 'DELETE')
+    #request("http://localhost:8080/api/servers/127.0.0.2:25565", 'POST', json.dumps(_data))
 except Exception as e:
     print e
 
@@ -34,7 +34,7 @@ while update:
     try:
         time.sleep(1)
         try:
-            request("http://localhost:8080/api/servers/127.0.0.1:25565", 'PUT')
+            request("http://localhost:8080/api/servers/127.2.2.2:25565", 'PUT')
         except Exception as e:
             print e
     except KeyboardInterrupt:
