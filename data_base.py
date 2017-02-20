@@ -34,7 +34,7 @@ class DataBase:
             self.__db[id]['version'] = version
             self.__db[id]['passw'] = passw
 
-    def add(self, ip, port, query_port, hostname, modname, players, max_players, last_update, version, passw):
+    def add(self, ip, port, query_port, hostname, modname, players, max_players, last_update, version='<0.5.0', passw=False):
         if not self.__check_types(ip, port, query_port, hostname, modname, players, max_players,
                                   last_update, version, passw):
             return
@@ -51,7 +51,7 @@ class DataBase:
         return id
 
     # todo: need partial update support
-    def update(self, ip, port, query_port, hostname, modname, players, max_players, last_update, version, passw):
+    def update(self, ip, port, query_port, hostname, modname, players, max_players, last_update, version='<0.5.0', passw=False):
         id = self.__id(ip, port)
         if not self.if_exists(id):
             return
